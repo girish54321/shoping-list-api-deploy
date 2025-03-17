@@ -4,6 +4,8 @@ import { sequelize } from '../models';
 import morgan = require('morgan');
 import createError = require('http-errors');
 import authRoute from './route/authRoute';
+import shopRoute from './route/shopListRoute';
+import { verifyAccessToken } from './helper/jwthelper';
 const app = express()
 //* Let Server Image
 app.use('/todoimages', express.static('todoimages'))
@@ -15,7 +17,11 @@ app.use(express.urlencoded({ extended: true }))
 const PORT = process.env.PORT || 2000
 //* Routs
 app.use("/api/v1/auth", authRoute)
-
+//* Create User Shop List
+app.use("/api/v1/shoplist", verifyAccessToken, shopRoute)
+app.use((req, res, next) => {
+    next(createError.BadRequest())
+})
 app.use(async (req, res, next) => {
     next(createError.NotFound())
 })
@@ -43,3 +49,5 @@ const start = async () => {
 }
 
 start()
+
+// yarn sequelize-cli model:generate --name ShopListItem --attributes name:string,itemInfo:string,state:string

@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // this.hasMany(models.ShopingList, {
-      //   foreignKey: 'userId',
-      //   as: 'shopingLists',
-      // });
+      this.hasMany(models.ShopList, {
+        foreignKey: 'userId',
+        as: 'ShopLists',
+      });
     }
 
     toJSON() {
