@@ -9,6 +9,7 @@ export interface CreateShopListType {
     shopListId?: string;
     listName?: string;
     listInfo?: string;
+    isCompleted?: boolean;
 }
 export interface LoginRequestType {
     email?: string;

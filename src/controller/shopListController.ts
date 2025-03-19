@@ -90,6 +90,34 @@ const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res:
     }
 }
 
+const updateShopListItemState = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+    try {
+        const body = req.body;
+
+        if (!body.shopListId) {
+            throw createError.BadRequest("shopListId Required")
+        }
+
+        if (!body.isCompleted == null || body.isCompleted == undefined) {
+            throw createError.BadRequest("isCompleted Required")
+        }
+
+        const findShopListItem = await ShopListItem.findByPk(body.shopListId)
+
+        if (!findShopListItem) {
+            throw createError.BadRequest("No ShopListItem found");
+        }
+
+        findShopListItem.state = body.isCompleted ? "completed" : "not-completed";
+        await findShopListItem.save();
+        res.send({ "message": "done" })
+
+    } catch (error) {
+        console.log("Cant update shoplistItemState", error)
+        next(error)
+    }
+}
+
 
 const getAllShopList = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
     try {
@@ -100,8 +128,12 @@ const getAllShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
         if (!findUser) {
             throw createError.BadRequest("User Not Found")
         }
-        const allShopLists = await findUser.getShopLists()
-
+        const allShopLists = await findUser.getShopLists({
+            include: {
+                model: ShopListItem,
+                as: 'shopListItems',
+            },
+        })
         res.send(allShopLists)
     } catch (error) {
         console.log("Get All Shop List Error: " + error);
@@ -154,4 +186,4 @@ const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Re
 }
 
 
-export { createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem }
+export { createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem, updateShopListItemState }
