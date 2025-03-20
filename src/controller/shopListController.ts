@@ -33,6 +33,36 @@ const createShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
     }
 }
 
+const deleteShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+    try {
+        //@ts-ignore
+        const findShopListItem = await ShopListItem.findByPk(req.params.id)
+        if (!findShopListItem) {
+            throw createError.BadRequest("ShopList Not Found")
+        }
+        await findShopListItem.destroy();
+        res.send({ "message": "done" })
+    } catch (error) {
+        console.log("Cant delete shoplist", error)
+        next(error)
+    }
+}
+
+const deleteShopList = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+    try {
+        //@ts-ignore
+        const findShopList = await ShopList.findByPk(req.params.id)
+        if (!findShopList) {
+            throw createError.BadRequest("ShopList Not Found")
+        }
+        await findShopList.destroy();
+        res.send({ "message": "done" })
+    } catch (error) {
+        console.log("Cant delete shoplist", error)
+        next(error)
+    }
+}
+
 const updateShopList = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
     try {
         const body = req.body;
@@ -58,7 +88,6 @@ const updateShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
         next(error)
     }
 }
-
 const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
     try {
         const body = req.body;
@@ -79,11 +108,10 @@ const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res:
             throw createError.BadRequest("No ShopListItem found");
         }
 
-        findShopListItem.listName = body.listName;
-        findShopListItem.listInfo = body.listInfo;
+        findShopListItem.name = body.listName;
+        findShopListItem.itemInfo = body.listInfo;
         await findShopListItem.save();
         res.send({ "message": "done" })
-
     } catch (error) {
         console.log("Cant update shoplistItem", error)
         next(error)
@@ -186,4 +214,4 @@ const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Re
 }
 
 
-export { createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem, updateShopListItemState }
+export { createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem, updateShopListItemState, deleteShopListItem, deleteShopList }

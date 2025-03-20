@@ -39,7 +39,6 @@ const createAccount = async (req: Request<{}, {}, CreateAccountRequestType>, res
         res.send({ accessToken, refreshToken })
     } catch (error) {
         console.log("Create Account Error: " + error);
-
         next(error)
     }
 }
