@@ -12,7 +12,7 @@ shopRoute.put("/update-shop-list", updateShopList)
 shopRoute.put("/update-shop-item", updateShopListItem)
 shopRoute.put("/update-shop-list-state", updateShopListItemState)
 
-shopRoute.delete("/delete-shop-list-item:/id", deleteShopListItem);
-shopRoute.delete("/delete-shop-list:/id", deleteShopList);
+shopRoute.delete("/delete-shop-list-item/:id", deleteShopListItem);
+shopRoute.delete("/delete-shop-list/:id", deleteShopList);
 
 export default shopRoute

@@ -26,7 +26,9 @@ const createShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
             listInfo: body.listInfo,
         })
 
-        res.status(201).json(newShopList)
+        res.status(201).json({
+            success: true
+        })
     } catch (error) {
         console.log("Create Account Error: " + error);
         next(error)
@@ -41,7 +43,9 @@ const deleteShopListItem = async (req: Request<{}, {}, CreateShopListType>, res:
             throw createError.BadRequest("ShopList Not Found")
         }
         await findShopListItem.destroy();
-        res.send({ "message": "done" })
+        res.send({
+            success: true
+        })
     } catch (error) {
         console.log("Cant delete shoplist", error)
         next(error)
@@ -56,7 +60,7 @@ const deleteShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
             throw createError.BadRequest("ShopList Not Found")
         }
         await findShopList.destroy();
-        res.send({ "message": "done" })
+        res.send({ success: true })
     } catch (error) {
         console.log("Cant delete shoplist", error)
         next(error)
@@ -82,7 +86,9 @@ const updateShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
         findShopList.listName = body.listName;
         findShopList.listInfo = body.listInfo;
         await findShopList.save();
-        res.send({ "message": "done" })
+        res.send({
+            success: true
+        })
     } catch (error) {
         console.log("Cant update shoplist", error)
         next(error)
@@ -111,7 +117,7 @@ const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res:
         findShopListItem.name = body.listName;
         findShopListItem.itemInfo = body.listInfo;
         await findShopListItem.save();
-        res.send({ "message": "done" })
+        res.send({ success: true })
     } catch (error) {
         console.log("Cant update shoplistItem", error)
         next(error)
@@ -138,8 +144,9 @@ const updateShopListItemState = async (req: Request<{}, {}, CreateShopListType>,
 
         findShopListItem.state = body.isCompleted ? "completed" : "not-completed";
         await findShopListItem.save();
-        res.send({ "message": "done" })
-
+        res.send({
+            success: true
+        })
     } catch (error) {
         console.log("Cant update shoplistItemState", error)
         next(error)
@@ -151,7 +158,9 @@ const getAllShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
     try {
         //@ts-ignore
         const userId = req.payLoad.aud
+        const query = req.query;
         const findUser = await User.findByPk(userId)
+        const isCompleted = query.isCompleted;
 
         if (!findUser) {
             throw createError.BadRequest("User Not Found")
@@ -161,8 +170,13 @@ const getAllShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
                 model: ShopListItem,
                 as: 'shopListItems',
             },
+            where: {
+                state: isCompleted === "isCompleted" ? 'completed' : "not-completed"
+            }
         })
-        res.send(allShopLists)
+        res.send({
+            allShopLists: allShopLists
+        })
     } catch (error) {
         console.log("Get All Shop List Error: " + error);
         next(error)
@@ -173,13 +187,19 @@ const getAllShopListItems = async (req: Request<{}, {}, CreateShopListType>, res
     try {
         //@ts-ignore
         const findShopList = await ShopList.findByPk(req.params.shopListId)
+        const query = req.query;
+        const isCompleted = query.isCompleted;
 
         if (!findShopList) {
             throw createError.BadRequest("ShopList Not Found")
         }
-        const allShopLists = await findShopList.getShopListItems()
+        const allShopListItem = await findShopList.getShopListItems({
+            where: {
+                state: isCompleted === "isCompleted" ? 'completed' : "not-completed"
+            }
+        })
 
-        res.send({ findShopList, allShopLists })
+        res.send({ allShopListItem })
     } catch (error) {
         console.log("Get All Shop List Error: " + error);
         next(error)
@@ -206,7 +226,9 @@ const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Re
             itemInfo: body.listInfo,
         })
 
-        res.status(201).json(newShopListItem)
+        res.status(201).json({
+            success: true
+        })
     } catch (error) {
         console.log("Add Shop List Item Error: " + error);
         next(error)
