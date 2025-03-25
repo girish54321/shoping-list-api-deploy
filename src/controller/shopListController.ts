@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express'
 //@ts-ignore
 import { User, ShopListItem, ShopList, UserShopList } from '../../models'
 import { CreateShopListType } from '../types/authTypes'
+import mapToJSON from '../helper/mapToJson'
 
 const createShopList = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
     try {
@@ -171,9 +172,15 @@ const getAllShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
                 as: 'shopListItems',
             },
             where: {
-                state: isCompleted === "isCompleted" ? 'completed' : "not-completed"
+                state: isCompleted === "isCompleted" ? 'completed' : "not-completed",
             }
         })
+        //todo:
+
+        const responseObj = mapToJSON(allShopLists);
+        // console.log(responseObj[0].shopListItems);
+
+
         res.send({
             allShopLists: allShopLists
         })
@@ -186,7 +193,9 @@ const getAllShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
 const getAllShopListItems = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
     try {
         //@ts-ignore
-        const findShopList = await ShopList.findByPk(req.params.shopListId)
+        const shopListId = req.params.shopListId;
+        //@ts-ignore
+        const findShopList = await ShopList.findByPk(shopListId)
         const query = req.query;
         const isCompleted = query.isCompleted;
 
@@ -199,7 +208,19 @@ const getAllShopListItems = async (req: Request<{}, {}, CreateShopListType>, res
             }
         })
 
-        res.send({ allShopListItem })
+        const myShareLists = await UserShopList.findAll({
+            where: { shopListId: shopListId },
+            include: {
+                model: User,
+                as: 'user',
+                // include: {
+                //     model: ShopListItem,
+                //     as: 'shopListItems',
+                // },
+            },
+        });
+
+        res.send({ findShopList, allShopListItem, myShareLists })
     } catch (error) {
         console.log("Get All Shop List Error: " + error);
         next(error)
@@ -238,6 +259,7 @@ const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Re
 const shareShopListWithUser = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
     try {
         const shopList = await ShopList.findByPk(req.body.shopListId)
+        const shopListId = req.body.shopListId
         if (!shopList) {
             throw new Error("ShopList not found");
         }
@@ -246,7 +268,7 @@ const shareShopListWithUser = async (req: Request<{}, {}, CreateShopListType>, r
 
         // Ensure the owner is the one sharing
         const isOwner = await ShopList.findOne({
-            where: { userId: userId, shopListId: req.body.shopListId }
+            where: { userId: userId, shopListId: shopListId }
         });
 
         if (!isOwner) {
@@ -255,6 +277,21 @@ const shareShopListWithUser = async (req: Request<{}, {}, CreateShopListType>, r
 
         if (!req.body.sharedUserId) {
             throw createError.BadRequest("Shared User Id Required")
+        }
+
+        // Check if user already shared the list
+        const sharedUser = await UserShopList.findOne({
+            where: { userId: req.body.sharedUserId, shopListId: shopListId }
+        });
+
+        if (sharedUser) {
+            throw createError.BadRequest("User already shared this list")
+        }
+
+        // Check if the user exists
+        const findUser = await User.findByPk(req.body.sharedUserId)
+        if (!findUser) {
+            throw createError.BadRequest("User not found")
         }
 
         // Add shared user
@@ -284,7 +321,8 @@ const getMyShareList = async (req: Request<{}, {}, CreateShopListType>, res: Res
                 // },
             },
         });
-
+        const usersJSON = myShareLists.map(user => user.toJSON()); // Convert to JSON
+        console.log(usersJSON);
         res.send({ myShareLists });
     } catch (error) {
         console.log("Get My Share List Error: " + error);

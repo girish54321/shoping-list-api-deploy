@@ -24,9 +24,16 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "shopListId",
         as: "shopList", // Alias for referencing ShopList
       });
-
-
     }
+
+    toJSON() {
+      return {
+        ...this.get(), user: {
+          password: undefined,
+        }
+      }
+    }
+
   }
   UserShopList.init({
     userId: {
