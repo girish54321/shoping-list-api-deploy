@@ -15,16 +15,16 @@ const createShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
             throw createError.BadRequest("User Not Found")
         }
         const body = req.body;
-        if (!body.listName) {
+        if (!body.shopListName) {
             throw createError.BadRequest("List Name Required")
         }
-        if (!body.listInfo) {
-            throw createError.BadRequest("List Info Required")
+        if (!body.description) {
+            throw createError.BadRequest("List description Required")
         }
         const newShopList = await findUser.createShopList({
-            listName: body.listName,
+            shopListName: body.shopListName,
             //@ts-ignore
-            listInfo: body.listInfo,
+            description: body.description,
         })
 
         res.status(201).json({
@@ -72,10 +72,10 @@ const updateShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
     try {
         const body = req.body;
 
-        if (!body.listName) {
-            throw createError.BadRequest("List Name Required")
+        if (!body.shopListName) {
+            throw createError.BadRequest("shopListName Name Required")
         }
-        if (!body.listInfo) {
+        if (!body.description) {
             throw createError.BadRequest("List Info Required")
         }
         const findShopList = await ShopList.findByPk(req.body.shopListId)
@@ -84,8 +84,8 @@ const updateShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
             throw createError.BadRequest("ShopList Not Found")
         }
 
-        findShopList.listName = body.listName;
-        findShopList.listInfo = body.listInfo;
+        findShopList.shopListName = body.shopListName;
+        findShopList.description = body.description;
         await findShopList.save();
         res.send({
             success: true
@@ -102,10 +102,10 @@ const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res:
         if (!body.shopListId) {
             throw createError.BadRequest("shopListId Required")
         }
-        if (!body.listName) {
+        if (!body.itemName) {
             throw createError.BadRequest("List Name Required")
         }
-        if (!body.listInfo) {
+        if (!body.description) {
             throw createError.BadRequest("List Info Required")
         }
 
@@ -115,8 +115,8 @@ const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res:
             throw createError.BadRequest("No ShopListItem found");
         }
 
-        findShopListItem.name = body.listName;
-        findShopListItem.itemInfo = body.listInfo;
+        findShopListItem.itemName = body.itemName;
+        findShopListItem.description = body.description;
         await findShopListItem.save();
         res.send({ success: true })
     } catch (error) {
@@ -236,15 +236,15 @@ const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Re
         }
 
         const body = req.body;
-        if (!body.listName) {
+        if (!body.itemName) {
             throw createError.BadRequest("Item Name Required")
         }
-        if (!body.listInfo) {
+        if (!body.description) {
             throw createError.BadRequest("Item Info Required")
         }
         const newShopListItem = await findShopList.createShopListItem({
-            name: body.listName,
-            itemInfo: body.listInfo,
+            name: body.itemName,
+            itemInfo: body.description,
         })
 
         res.status(201).json({

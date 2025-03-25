@@ -9,10 +9,10 @@ module.exports = {
         primaryKey: true,
         defaultValue: Sequelize.UUIDV4,
       },
-      listName: {
+      shopListName: {
         type: Sequelize.STRING
       },
-      listInfo: {
+      description: {
         type: Sequelize.STRING
       },
       state: {

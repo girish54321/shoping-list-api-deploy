@@ -7,9 +7,10 @@ export interface CreateAccountRequestType {
 
 export interface CreateShopListType {
     shopListId?: string;
-    listName?: string;
-    listInfo?: string;
+    shopListName?: string;
+    description?: string;
     isCompleted?: boolean;
+    itemName?: string;
     sharedUserId?: string;
 }
 export interface LoginRequestType {
