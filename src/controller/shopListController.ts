@@ -1,7 +1,7 @@
 import createError = require('http-errors')
 import { Request, Response, NextFunction } from 'express'
 //@ts-ignore
-import { User, ShopListItem, ShopList } from '../../models'
+import { User, ShopListItem, ShopList, UserShopList } from '../../models'
 import { CreateShopListType } from '../types/authTypes'
 
 const createShopList = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
@@ -235,5 +235,64 @@ const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Re
     }
 }
 
+const shareShopListWithUser = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+    try {
+        const shopList = await ShopList.findByPk(req.body.shopListId)
+        if (!shopList) {
+            throw new Error("ShopList not found");
+        }
+        //@ts-ignore
+        const userId = req.payLoad.aud
 
-export { createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem, updateShopListItemState, deleteShopListItem, deleteShopList }
+        // Ensure the owner is the one sharing
+        const isOwner = await ShopList.findOne({
+            where: { userId: userId, shopListId: req.body.shopListId }
+        });
+
+        if (!isOwner) {
+            throw createError.BadRequest("You don't have permission to share this list")
+        }
+
+        if (!req.body.sharedUserId) {
+            throw createError.BadRequest("Shared User Id Required")
+        }
+
+        // Add shared user
+        await UserShopList.create({
+            userId: req.body.sharedUserId,
+            shopListId: req.body.shopListId
+        });
+        res.send({ success: true })
+    } catch (error) {
+        console.log("Add Shop List Item Error: " + error);
+        next(error)
+    }
+}
+
+const getMyShareList = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+    try {
+        //@ts-ignore
+        const userId = req.payLoad.aud
+        const myShareLists = await UserShopList.findAll({
+            where: { userId: userId },
+            include: {
+                model: ShopList,
+                as: 'shopList',
+                // include: {
+                //     model: ShopListItem,
+                //     as: 'shopListItems',
+                // },
+            },
+        });
+
+        res.send({ myShareLists });
+    } catch (error) {
+        console.log("Get My Share List Error: " + error);
+        next(error)
+    }
+}
+
+export {
+    createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem, updateShopListItemState,
+    deleteShopListItem, deleteShopList, shareShopListWithUser, getMyShareList
+}

@@ -10,6 +10,7 @@ export interface CreateShopListType {
     listName?: string;
     listInfo?: string;
     isCompleted?: boolean;
+    sharedUserId?: string;
 }
 export interface LoginRequestType {
     email?: string;

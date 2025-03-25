@@ -1,5 +1,8 @@
 import { Router } from 'express'
-import { createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem, updateShopListItemState, deleteShopListItem, deleteShopList } from '../controller/shopListController'
+import {
+    createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem, updateShopListItemState, deleteShopListItem,
+    deleteShopList, shareShopListWithUser, getMyShareList
+} from '../controller/shopListController'
 const shopRoute = Router()
 
 shopRoute.post("/create-list", createShopList)
@@ -14,5 +17,9 @@ shopRoute.put("/update-shop-list-state", updateShopListItemState)
 
 shopRoute.delete("/delete-shop-list-item/:id", deleteShopListItem);
 shopRoute.delete("/delete-shop-list/:id", deleteShopList);
+
+shopRoute.post("/share-shop-list", shareShopListWithUser);
+
+shopRoute.get("/share-shop-list", getMyShareList)
 
 export default shopRoute
