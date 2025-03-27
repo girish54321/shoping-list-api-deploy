@@ -26,14 +26,6 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    toJSON() {
-      return {
-        ...this.get(), user: {
-          password: undefined,
-        }
-      }
-    }
-
   }
   UserShopList.init({
     userId: {

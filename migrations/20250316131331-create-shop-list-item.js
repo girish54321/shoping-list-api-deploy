@@ -10,10 +10,24 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
       },
       itemName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: ""
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true,
+        defaultValue: ""
+      },
+      quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        defaultValue: 1
+      },
+      price: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        defaultValue: 0
       },
       state: {
         type: Sequelize.ENUM('completed', 'not-completed'),

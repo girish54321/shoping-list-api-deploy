@@ -2,7 +2,7 @@ import createError = require('http-errors')
 import { Request, Response, NextFunction } from 'express'
 //@ts-ignore
 import { User, ShopListItem, ShopList, UserShopList } from '../../models'
-import { CreateShopListType } from '../types/authTypes'
+import { CreateShopListItemType, CreateShopListType, ShareShopListType, UpdateShopListItemType, UpdateShopListType } from '../types/authTypes'
 import mapToJSON from '../helper/mapToJson'
 
 const createShopList = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
@@ -23,7 +23,6 @@ const createShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
         }
         const newShopList = await findUser.createShopList({
             shopListName: body.shopListName,
-            //@ts-ignore
             description: body.description,
         })
 
@@ -68,7 +67,7 @@ const deleteShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
     }
 }
 
-const updateShopList = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+const updateShopList = async (req: Request<{}, {}, UpdateShopListType>, res: Response, next: NextFunction) => {
     try {
         const body = req.body;
 
@@ -95,21 +94,21 @@ const updateShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
         next(error)
     }
 }
-const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+const updateShopListItem = async (req: Request<{}, {}, UpdateShopListItemType>, res: Response, next: NextFunction) => {
     try {
         const body = req.body;
 
-        if (!body.shopListId) {
+        if (!body.itemId) {
             throw createError.BadRequest("shopListId Required")
         }
         if (!body.itemName) {
             throw createError.BadRequest("List Name Required")
         }
-        if (!body.description) {
-            throw createError.BadRequest("List Info Required")
-        }
+        // if (!body.description) {
+        //     throw createError.BadRequest("List Info Required")
+        // }
 
-        const findShopListItem = await ShopListItem.findByPk(body.shopListId)
+        const findShopListItem = await ShopListItem.findByPk(body.itemId)
 
         if (!findShopListItem) {
             throw createError.BadRequest("No ShopListItem found");
@@ -117,6 +116,8 @@ const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res:
 
         findShopListItem.itemName = body.itemName;
         findShopListItem.description = body.description;
+        findShopListItem.quantity = body.quantity;
+        findShopListItem.price = body.price;
         await findShopListItem.save();
         res.send({ success: true })
     } catch (error) {
@@ -125,11 +126,11 @@ const updateShopListItem = async (req: Request<{}, {}, CreateShopListType>, res:
     }
 }
 
-const updateShopListItemState = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+const updateShopListItemState = async (req: Request<{}, {}, UpdateShopListItemType>, res: Response, next: NextFunction) => {
     try {
         const body = req.body;
 
-        if (!body.shopListId) {
+        if (!body.itemId) {
             throw createError.BadRequest("shopListId Required")
         }
 
@@ -137,7 +138,7 @@ const updateShopListItemState = async (req: Request<{}, {}, CreateShopListType>,
             throw createError.BadRequest("isCompleted Required")
         }
 
-        const findShopListItem = await ShopListItem.findByPk(body.shopListId)
+        const findShopListItem = await ShopListItem.findByPk(body.itemId)
 
         if (!findShopListItem) {
             throw createError.BadRequest("No ShopListItem found");
@@ -167,22 +168,18 @@ const getAllShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
             throw createError.BadRequest("User Not Found")
         }
         const allShopLists = await findUser.getShopLists({
-            include: {
-                model: ShopListItem,
-                as: 'shopListItems',
-            },
+            // include: {
+            //     model: ShopListItem,
+            //     as: 'shopListItems',
+            // },
             where: {
                 state: isCompleted === "isCompleted" ? 'completed' : "not-completed",
             }
         })
-        //todo:
-
-        const responseObj = mapToJSON(allShopLists);
-        // console.log(responseObj[0].shopListItems);
-
+        console.log("shopList", allShopLists);
 
         res.send({
-            allShopLists: allShopLists
+            shopList: allShopLists
         })
     } catch (error) {
         console.log("Get All Shop List Error: " + error);
@@ -195,20 +192,20 @@ const getAllShopListItems = async (req: Request<{}, {}, CreateShopListType>, res
         //@ts-ignore
         const shopListId = req.params.shopListId;
         //@ts-ignore
-        const findShopList = await ShopList.findByPk(shopListId)
+        const shopList = await ShopList.findByPk(shopListId)
         const query = req.query;
         const isCompleted = query.isCompleted;
 
-        if (!findShopList) {
+        if (!shopList) {
             throw createError.BadRequest("ShopList Not Found")
         }
-        const allShopListItem = await findShopList.getShopListItems({
+        const shopListItem = await shopList.getShopListItems({
             where: {
                 state: isCompleted === "isCompleted" ? 'completed' : "not-completed"
             }
         })
 
-        const myShareLists = await UserShopList.findAll({
+        const sharedWith = await UserShopList.findAll({
             where: { shopListId: shopListId },
             include: {
                 model: User,
@@ -220,14 +217,14 @@ const getAllShopListItems = async (req: Request<{}, {}, CreateShopListType>, res
             },
         });
 
-        res.send({ findShopList, allShopListItem, myShareLists })
+        res.send({ shopList, shopListItem, sharedWith })
     } catch (error) {
         console.log("Get All Shop List Error: " + error);
         next(error)
     }
 }
 
-const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+const addShopListItem = async (req: Request<{}, {}, CreateShopListItemType>, res: Response, next: NextFunction) => {
     try {
         const findShopList = await ShopList.findByPk(req.body.shopListId)
 
@@ -239,12 +236,14 @@ const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Re
         if (!body.itemName) {
             throw createError.BadRequest("Item Name Required")
         }
-        if (!body.description) {
-            throw createError.BadRequest("Item Info Required")
-        }
+        // if (!body.description) {
+        //     throw createError.BadRequest("Item Info Required")
+        // }
         const newShopListItem = await findShopList.createShopListItem({
-            name: body.itemName,
-            itemInfo: body.description,
+            itemName: body.itemName,
+            description: body.description ?? "",
+            quantity: body.quantity,
+            price: body.price,
         })
 
         res.status(201).json({
@@ -256,7 +255,7 @@ const addShopListItem = async (req: Request<{}, {}, CreateShopListType>, res: Re
     }
 }
 
-const shareShopListWithUser = async (req: Request<{}, {}, CreateShopListType>, res: Response, next: NextFunction) => {
+const shareShopListWithUser = async (req: Request<{}, {}, ShareShopListType>, res: Response, next: NextFunction) => {
     try {
         const shopList = await ShopList.findByPk(req.body.shopListId)
         const shopListId = req.body.shopListId
@@ -266,7 +265,6 @@ const shareShopListWithUser = async (req: Request<{}, {}, CreateShopListType>, r
         //@ts-ignore
         const userId = req.payLoad.aud
 
-        // Ensure the owner is the one sharing
         const isOwner = await ShopList.findOne({
             where: { userId: userId, shopListId: shopListId }
         });
@@ -279,7 +277,6 @@ const shareShopListWithUser = async (req: Request<{}, {}, CreateShopListType>, r
             throw createError.BadRequest("Shared User Id Required")
         }
 
-        // Check if user already shared the list
         const sharedUser = await UserShopList.findOne({
             where: { userId: req.body.sharedUserId, shopListId: shopListId }
         });
@@ -288,13 +285,11 @@ const shareShopListWithUser = async (req: Request<{}, {}, CreateShopListType>, r
             throw createError.BadRequest("User already shared this list")
         }
 
-        // Check if the user exists
         const findUser = await User.findByPk(req.body.sharedUserId)
         if (!findUser) {
             throw createError.BadRequest("User not found")
         }
 
-        // Add shared user
         await UserShopList.create({
             userId: req.body.sharedUserId,
             shopListId: req.body.shopListId

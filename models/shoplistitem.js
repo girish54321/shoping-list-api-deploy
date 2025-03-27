@@ -24,8 +24,26 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
-    name: DataTypes.STRING,
-    itemInfo: DataTypes.STRING,
+    itemName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: ""
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: ""
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+      allowNull: true,
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: true,
+    },
     state: {
       type: DataTypes.ENUM("completed", "not-completed"),
       defaultValue: 'not-completed',

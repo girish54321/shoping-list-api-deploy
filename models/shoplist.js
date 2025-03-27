@@ -40,8 +40,8 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
-    listName: DataTypes.STRING,
-    listInfo: DataTypes.STRING,
+    shopListName: DataTypes.STRING,
+    description: DataTypes.STRING,
     state: {
       type: DataTypes.ENUM("completed", "not-completed"),
       defaultValue: 'not-completed',
