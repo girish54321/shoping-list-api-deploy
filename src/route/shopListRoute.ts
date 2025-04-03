@@ -1,7 +1,9 @@
 import { Router } from 'express'
 import {
     createShopList, addShopListItem, getAllShopList, getAllShopListItems, updateShopList, updateShopListItem, updateShopListItemState, deleteShopListItem,
-    deleteShopList, shareShopListWithUser, getMyShareList
+    deleteShopList, shareShopListWithUser, getMyShareList,
+    getSharedUserList, updateComanItem, deleteComanItem,
+    getUserEmailList, addCommonItems, getAllCommonItems
 } from '../controller/shopListController'
 const shopRoute = Router()
 
@@ -21,5 +23,16 @@ shopRoute.delete("/delete-shop-list/:id", deleteShopList);
 shopRoute.post("/share-shop-list", shareShopListWithUser);
 
 shopRoute.get("/share-shop-list", getMyShareList)
+
+shopRoute.get("/share-shop-list/:id", getSharedUserList)
+
+shopRoute.get("/user-list", getUserEmailList)
+
+shopRoute.post("/add-common-items", addCommonItems);
+shopRoute.put("/update-common-items", updateComanItem);
+
+shopRoute.get("/get-common-items", getAllCommonItems)
+
+shopRoute.delete("/delete-common-items", deleteComanItem)
 
 export default shopRoute

@@ -16,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
         as: 'ShopLists',
       });
 
+      this.hasMany(models.CommonItem, {
+        foreignKey: 'userId',
+        as: 'CommonItems',
+      });
+
       this.belongsToMany(models.ShopList, {
         through: 'UserShopLists',
         foreignKey: 'userId',

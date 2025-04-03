@@ -49,3 +49,4 @@ const start = async () => {
 }
 
 start()
+// yarn sequelize-cli model:generate --name CommonItem --attributes itemName:string,description:string,quantity:integer,price:integer
