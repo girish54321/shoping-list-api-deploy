@@ -19,6 +19,18 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'shopListId',
         as: 'shopListItems',
       });
+
+      this.belongsToMany(models.User, {
+        through: 'UserShopLists',
+        foreignKey: 'shopListId',
+        as: 'sharedUsers'
+      });
+      // this.belongsToMany(models.ShopList, {
+      //   through: 'UserShopLists',
+      //   foreignKey: 'userId',
+      //   as: 'sharedShopLists'
+      // });
+
     }
   }
   ShopList.init({
@@ -28,8 +40,8 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
-    listName: DataTypes.STRING,
-    listInfo: DataTypes.STRING,
+    shopListName: DataTypes.STRING,
+    description: DataTypes.STRING,
     state: {
       type: DataTypes.ENUM("completed", "not-completed"),
       defaultValue: 'not-completed',

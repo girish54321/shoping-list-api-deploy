@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class ShopListItem extends Model {
+  class CommonItem extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,14 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.ShopList, {
-        foreignKey: 'shopListId',
-        as: 'ShopLists',
+      this.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'CommonItems',
       });
     }
   }
-  ShopListItem.init({
-    shopListItemsId: {
+  CommonItem.init({
+    commonItemsId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
@@ -44,13 +44,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
       allowNull: true,
     },
-    state: {
-      type: DataTypes.ENUM("completed", "not-completed"),
-      defaultValue: 'not-completed',
-    }
   }, {
     sequelize,
-    modelName: 'ShopListItem',
+    modelName: 'CommonItem',
   });
-  return ShopListItem;
+  return CommonItem;
 };

@@ -2,23 +2,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('ShopLists', {
-      shopListId: {
+    await queryInterface.createTable('CommonItems', {
+      commonItemsId: {
         type: Sequelize.UUID,
         allowNull: false,
         primaryKey: true,
         defaultValue: Sequelize.UUIDV4,
       },
-      shopListName: {
-        type: Sequelize.STRING
+      itemName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: ""
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true,
+        defaultValue: ""
       },
-      state: {
-        type: Sequelize.ENUM('completed', 'not-completed'),
-        defaultValue: 'not-completed',
-        allowNull: false,
+      quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        defaultValue: 1
+      },
+      price: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        defaultValue: 0
       },
       userId: {
         type: Sequelize.UUID,
@@ -41,6 +50,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('ShopLists');
+    await queryInterface.dropTable('CommonItems');
   }
 };

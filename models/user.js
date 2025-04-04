@@ -15,6 +15,24 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId',
         as: 'ShopLists',
       });
+
+      this.hasMany(models.CommonItem, {
+        foreignKey: 'userId',
+        as: 'CommonItems',
+      });
+
+      this.belongsToMany(models.ShopList, {
+        through: 'UserShopLists',
+        foreignKey: 'userId',
+        as: 'sharedShopLists'
+      });
+
+      // User.belongsToMany(models.ShopList, {
+      //   through: models.UserShopLists,
+      //   foreignKey: "userId",
+      //   as: "sharedShopLists",
+      // });
+
     }
 
     toJSON() {
