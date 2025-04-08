@@ -177,18 +177,19 @@ const getAllShopList = async (req: Request<{}, {}, CreateShopListType>, res: Res
             //     state: isCompleted === "isCompleted" ? 'completed' : "not-completed",
             // }
         })
-        const updatedList = mapToJSON(allShopLists)?.map((item) => {
-            return {
-                "shopListId": item.shopListId,
-                "shopListName": item.shopListName,
-                "description": item.description,
-                "state": item.state,
-                "createdAt": item.createdAt,
-                "updatedAt": item.updatedAt,
-                "userId": item.userId,
-                isCompleted: item?.shopListItems?.every(((item2) => item2.state === 'completed' ? true : false))
-            }
-        })
+        const updatedList = mapToJSON(allShopLists)?.map(item => ({
+            shopListId: item.shopListId,
+            shopListName: item.shopListName,
+            description: item.description,
+            state: item.state,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            userId: item.userId,
+            isCompleted: item.shopListItems?.length
+                ? item.shopListItems.every(i => i?.state === 'completed')
+                : false
+        }));
+
 
         if (isCompleted === 'isCompleted') {
             let completedList = updatedList?.filter((item) => {
