@@ -6,6 +6,7 @@ import createError = require('http-errors');
 import authRoute from './route/authRoute';
 import shopRoute from './route/shopListRoute';
 import { verifyAccessToken } from './helper/jwthelper';
+// import { addDelay } from './helper/mapToJson';
 const app = express()
 //* Let Server Image
 app.use('/todoimages', express.static('todoimages'))
@@ -15,6 +16,7 @@ app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 const PORT = process.env.PORT || 2000
+// app.use(addDelay(3000));
 //* Routs
 app.use("/api/v1/auth", authRoute)
 //* Create User Shop List
