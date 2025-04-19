@@ -1,59 +1,89 @@
-# My ToDo App (Backend)
+# 🛒 Shopping List API Backend
 
-[![GitHub license](https://img.shields.io/github/license/girish54321/My-Wall)](https://github.com/girish54321/My-Wall/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/girish54321/My-Wall)](https://github.com/girish54321/My-Wall/issues)
-[![GitHub stars](https://img.shields.io/github/stars/girish54321/My-Wall)](https://github.com/girish54321/My-Wall/stargazers)
+A backend service built with **Node.js**, **Express**, and **Sequelize** to manage shopping lists and tasks efficiently. It provides RESTful APIs for CRUD operations and integrates seamlessly with frontend applications.
 
-About the App
+## 📸 Screenshots
 
-My ToDo App (Backend) is a backend service built with Node.js, Express, and Sequelize. a ToDo app designed to help users manage their tasks efficiently. This backend provides RESTful APIs to handle CRUD operations for tasks and integrates seamlessly with the frontend application.
+![App Screenshot](./assets/screenshot.png) <!-- Replace with actual screenshot path -->
 
-[Todo App](https://github.com/girish54321/To-Do-React-Native/tree/main)
+## 🚀 Features
 
-## Screenshots
+- User registration and authentication
+- Create, read, update, and delete shopping list items
+- Image upload support for tasks and profiles
+- PostgreSQL database integration
+- Sequelize ORM with migration support
+- Environment-based configuration
 
-<img width="1604"  src="appimage/appbanner.png?raw=true">
+## 🛠️ Installation
 
-## Installation
+1. **Clone the repository**
 
-- Clone the reop
-- run `yarn` to install node packages
-- Update `development` obj in `config/config.json` according to your local / Server
-- Setup this `postgresql` on your system
-- This project is using `sequelize` & `sequelize-cli` to help create tables
-- run `yarn sequelize-cli db:migrate` for more help check `sequelize-cli` [docs](https://sequelize.org/docs/v7/cli/#running-migrations)
-- run `yarn dev` to start the sever
+   ```bash
+   git clone https://github.com/girish54321/shoping-list-api-deploy.git
+   cd shoping-list-api-deploy
+   ```
 
-## EndPoints
+2. **Install dependencies**
 
-### Auth
+   ```bash
+   yarn install
+   ```
 
-```
-http://localhost:5000/api/v1/auth/signup
-```
+3. **Configure the database**
 
-```
-http://localhost:5000/api/v1/auth/login
-```
+   - Ensure PostgreSQL is installed and running.
+   - Update the `development` object in `config/config.json` with your database credentials.
 
-### Todo
+4. **Run migrations**
 
-```
-http://localhost:5000/api/v1/todo/addtodo
-```
+   ```bash
+   yarn sequelize-cli db:migrate
+   ```
 
-```
-http://localhost:5000/api/v1/todo/updatetodo
-```
+5. **Start the development server**
 
-```
-http://localhost:5000/api/v1/todo/gettodo
-```
+   ```bash
+   yarn dev
+   ```
 
-```
-http://localhost:5000/api/v1/todo/gettodo:id
-```
+## 📂 Project Structure
 
 ```
-http://localhost:5000/api/v1/todo/deletetodo:id
+├── config/             # Database configurations
+├── migrations/         # Sequelize migration files
+├── models/             # Sequelize models
+├── src/                # Source code (routes, controllers)
+├── profileimage/       # Uploaded profile images
+├── todoimages/         # Uploaded task images
+├── .env                # Environment variables
+├── package.json        # Project metadata and scripts
+├── tsconfig.json       # TypeScript configuration
+└── README.md           # Project documentation
 ```
+
+## 📡 API Endpoints
+
+| Method | Endpoint            | Description                  |
+|--------|---------------------|------------------------------|
+| POST   | `/api/register`     | Register a new user          |
+| POST   | `/api/login`        | Authenticate a user          |
+| GET    | `/api/tasks`        | Retrieve all tasks           |
+| POST   | `/api/tasks`        | Create a new task            |
+| PUT    | `/api/tasks/:id`    | Update an existing task      |
+| DELETE | `/api/tasks/:id`    | Delete a task                |
+| POST   | `/api/upload`       | Upload an image              |
+
+> **Note:** Ensure to include authentication headers where required.
+
+## 🧪 Testing
+
+You can use tools like [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest/) to test the API endpoints.
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+## 🙌 Acknowledgements
+
+Thanks to [Girish Parate](https://github.com/girish54321) for developing and maintaining this project.
