@@ -83,7 +83,4 @@ You can use tools like [Postman](https://www.postman.com/) or [Insomnia](https:/
 ## 📄 License
 
 This project is licensed under the [MIT License](./LICENSE).
-
-## 🙌 Acknowledgements
-
-Thanks to [Girish Parate](https://github.com/girish54321) for developing and maintaining this project.
+ 
